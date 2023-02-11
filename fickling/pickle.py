@@ -327,6 +327,9 @@ class ConstantInt(ConstantOpcode, ABC):
                              f"[{cls.min_value}, {cls.max_value}]")
         return obj
 
+class Int(ConstantOpcode):
+    name = "INT"
+
 
 class StackSliceOpcode(Opcode):
     def run(self, interpreter: "Interpreter", stack_slice: List[ast.expr]):
@@ -1018,6 +1021,17 @@ class Tuple(StackSliceOpcode):
     def run(self, interpreter: Interpreter, stack_slice: List[ast.expr]):
         interpreter.stack.append(ast.Tuple(tuple(stack_slice), ast.Load()))
 
+
+class Dict(StackSliceOpcode):
+    name = "DICT"
+
+    def run(self, interpreter: Interpreter, stack_slice: List[ast.expr]):
+        k = list()
+        v = list()
+        for i in range(0, len(stack_slice), 2):
+            k.append(stack_slice[i])
+            v.append(stack_slice[i+1])
+        interpreter.stack.append(ast.Dict(k, v))
 
 class Build(Opcode):
     name = "BUILD"
